@@ -185,7 +185,6 @@ class GradientMonitor:
 
             if has_nan or has_inf:
                 warnings.warn(f"⚠️ 层 {layer_name} 梯度出现NaN/Inf！step={step}")
-            return grad
 
         return hook
 
