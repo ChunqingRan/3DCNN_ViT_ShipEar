@@ -592,7 +592,6 @@ class EEGCNN3D(nn.Module):
         def grad_hook_fn(grad):
             if grad is not None:
                 self.grad_norm = torch.norm(grad).item()
-            return None
 
         self.grad_hooks["conv3d_2"] = self.conv3d_2.register_backward_hook(
             lambda module, grad_input, grad_output: grad_hook_fn(grad_output[0])
