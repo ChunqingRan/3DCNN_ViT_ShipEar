@@ -1,0 +1,19 @@
+首先，规划文件结构：
+config.py：配置参数，拆分出来，更清晰，补充 SEED 的配置、四分类参数、日志路径等。
+data_preprocess.py：数据预处理，包含 DEAP 和 SEED 的加载、电极映射、滤波、分段、标签处理，补充数据增强、标准化等。
+models.py：模型定义，拆分 3D-CNN、ViT、联合模型，补充权重初始化、模型保存加载的辅助函数。
+data_mapping.py：单独的 EEG 数据映射算法，补充映射后的可视化、特征验证。
+trainer.py：训练函数，补充早停、学习率调度、训练日志、梯度裁剪等。
+evaluator.py：评估函数，补充混淆矩阵、每个类别的指标、结果保存。
+main.py：主流程，整合所有模块，支持 DEAP/SEED、二分类 / 四分类，10 折交叉验证，结果汇总。
+utils.py：工具函数，比如日志配置、文件夹创建、数据标准化等。
+
+eeg_emotion_recognition/
+├── config.py          # 全局配置（覆盖DEAP/SEED、二/四分类）
+├── utils.py           # 工具函数（日志、文件夹创建、标准化等）
+├── data_preprocess.py # 数据预处理（DEAP/SEED加载、滤波、电极映射、增强）
+├── data_mapping.py    # 论文Algorithm 1：EEG特征→RGB图像映射
+├── models.py          # 模型定义（3D-CNN、ViT、双迁移联合模型）
+├── trainer.py         # 训练器（含早停、学习率调度、梯度裁剪）
+├── evaluator.py       # 评估器（混淆矩阵、分类指标、结果保存）
+└── main.py            # 主流程（10折交叉验证、实验调度）
