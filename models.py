@@ -200,9 +200,11 @@ class GradientMonitor:
                 found = False
 
             if found:
-                hook = layer.register_backward_hook(
-                    lambda module, grad_in, grad_out, ln=layer_name: self._grad_hook_fn(ln)(grad_out[0])
-                )
+                hook_fn = self._grad_hook_fn(layer_name)
+                def _wrapper(module, grad_input, grad_output, hook_fn=hook_fn):
+                    hook_fn(grad_output[0])
+                    return None
+                hook = layer.register_full_backward_hook(_wrapper)
                 self.hooks.append(hook)
             else:
                 warnings.warn(f"层 {layer_name} 不存在，跳过梯度监控")
@@ -593,13 +595,13 @@ class EEGCNN3D(nn.Module):
             if grad is not None:
                 self.grad_norm = torch.norm(grad).item()
 
-        self.grad_hooks["conv3d_2"] = self.conv3d_2.register_backward_hook(
-            lambda module, grad_input, grad_output: grad_hook_fn(grad_output[0])
-        )
+        def _wrapper(module, grad_input, grad_output):
+            grad_hook_fn(grad_output[0])
+            return None
+
+        self.grad_hooks["conv3d_2"] = self.conv3d_2.register_full_backward_hook(_wrapper)
         if self.fc_layers:
-            self.grad_hooks["fc_layers"] = self.fc_layers[0].register_backward_hook(
-                lambda module, grad_input, grad_output: grad_hook_fn(grad_output[0])
-            )
+            self.grad_hooks["fc_layers"] = self.fc_layers[0].register_full_backward_hook(_wrapper)
 
     def _init_weights(self):
         for m in self.modules():
