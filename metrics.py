@@ -1,6 +1,8 @@
 import torch
 import numpy as np
-from sklearn.metrics import classification_report, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from config import cfg
 
 
@@ -53,3 +55,25 @@ class MetricTracker:
             zero_division=0
         ))
         print("=" * 30)
+
+    def plot_confusion_matrix(self, save_path=None):
+        """绘制并保存混淆矩阵"""
+        if not self.targets or not self.preds:
+            print("Warning: No predictions to plot. Skipping confusion matrix generation.")
+            return
+        
+        cm = confusion_matrix(self.targets, self.preds)
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=cfg.class_names,
+                    yticklabels=cfg.class_names)
+        plt.ylabel('True Label')
+        plt.xlabel('Predicted Label')
+        plt.title('Confusion Matrix')
+
+        if save_path:
+            plt.savefig(save_path)
+            print(f"Confusion matrix saved to {save_path}")
+        else:
+            plt.show()
+        plt.close()
