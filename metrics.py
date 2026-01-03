@@ -58,6 +58,10 @@ class MetricTracker:
 
     def plot_confusion_matrix(self, save_path=None):
         """绘制并保存混淆矩阵"""
+        if not self.targets or not self.preds:
+            print("Warning: No predictions to plot. Skipping confusion matrix generation.")
+            return
+        
         cm = confusion_matrix(self.targets, self.preds)
         plt.figure(figsize=(10, 8))
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
